@@ -120,9 +120,9 @@ CGFloat const heightOfMinuteAndSecoundIndex = 160;
 }
 
 - (void)moveIndexesToCurrentTime:(CFTimeInterval)currentTime {
-    SKAction *secoundAction = [SKAction rotateToAngle:[self currentAngleInRadiansForSecoundsIndex:currentTime] duration:0];
-    SKAction *minuteAction = [SKAction rotateToAngle:[self currentAngleInRadiansForMinuteIndex:currentTime] duration:0];
-    SKAction *hourAction = [SKAction rotateToAngle:[self currentAngleInRadiansForHourIndex:currentTime] duration:0];
+    SKAction *secoundAction = [SKAction rotateByAngle:[self currentAngleInRadiansForSecoundsIndex:currentTime] duration:0];
+    SKAction *minuteAction = [SKAction rotateByAngle:[self currentAngleInRadiansForMinuteIndex:currentTime] duration:0];
+    SKAction *hourAction = [SKAction rotateByAngle:[self currentAngleInRadiansForHourIndex:currentTime] duration:0];
     
     [self.secoundIndex runAction:secoundAction];
     [self.minuteIndex runAction:minuteAction];
@@ -142,7 +142,9 @@ CGFloat const heightOfMinuteAndSecoundIndex = 160;
 }
 
 - (CGFloat)secoundIndexAngelFromTimeDiff:(CFTimeInterval)timeDiff {
-    return (-2*M_PI) / 60.0 * timeDiff;
+    NSUInteger timeInSec = timeDiff;
+    CGFloat fixedTime = ceilf((timeDiff - timeInSec) * 100 / 60) + timeInSec;
+    return (-2*M_PI) / 60.0 * fixedTime;
 }
 
 - (CGFloat)minuteIndexAngelFromTimeDiff:(CFTimeInterval)timeDiff {
