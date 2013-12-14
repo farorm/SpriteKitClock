@@ -36,7 +36,10 @@ CGFloat const heightOfMinuteAndSecoundIndex = 160;
 }
 
 - (CGFloat)currentLocalizedTime {
-    return CFAbsoluteTimeGetCurrent() + 60 * 60;
+    CFTimeZoneRef systemTimeZone = CFTimeZoneCopySystem();
+    double current = CFAbsoluteTimeGetCurrent();
+    CFRelease(systemTimeZone);
+    return current + CFTimeZoneGetSecondsFromGMT(systemTimeZone, current);
 }
 
 - (void)setupIndexes {
