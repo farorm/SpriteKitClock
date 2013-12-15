@@ -19,8 +19,16 @@
 
 @end
 
-CGFloat const radius = 150.0;
-CGFloat const heightOfMinuteAndSecoundIndex = 160;
+CGFloat const radius = 150.0f;
+CGFloat const heightSecoundIndex = 130.0f;
+CGFloat const heightMinuteIndex = 165.0f;
+CGFloat const widthOfIndex = 10.0f;
+
+CGFloat const anchorPointX = 0.5f;
+CGFloat const anchorPointY = 0.15f;
+
+#define SECOUND_INDEX_COLOR [SKColor redColor]
+#define INDEX_COLOR [SKColor blackColor]
 
 @implementation MyScene
 
@@ -43,18 +51,30 @@ CGFloat const heightOfMinuteAndSecoundIndex = 160;
 }
 
 - (void)setupIndexes {
-    CGSize minuteIndexSize = CGSizeMake(15, heightOfMinuteAndSecoundIndex);
-    CGSize hourIndexSize = CGSizeMake(15, 100);
-    CGSize secoundsIndexSize = CGSizeMake(5, heightOfMinuteAndSecoundIndex);
+    CGSize minuteIndexSize = CGSizeMake(widthOfIndex, heightMinuteIndex);
+    CGSize hourIndexSize = CGSizeMake(widthOfIndex, 100);
+    CGSize secoundsIndexSize = CGSizeMake(5, heightSecoundIndex);
     
-    self.hourIndex = [self rectOfSize:hourIndexSize withBackgroundColor:[SKColor blackColor]];
-    self.minuteIndex = [self rectOfSize:minuteIndexSize withBackgroundColor:[SKColor blackColor]];
-    self.secoundIndex = [self rectOfSize:secoundsIndexSize withBackgroundColor:[SKColor redColor]];
+    self.hourIndex = [self rectOfSize:hourIndexSize withBackgroundColor:INDEX_COLOR];
+    self.minuteIndex = [self rectOfSize:minuteIndexSize withBackgroundColor:INDEX_COLOR];
+    self.secoundIndex = [self rectOfSize:secoundsIndexSize withBackgroundColor:SECOUND_INDEX_COLOR];
+    
+    [self setupSecoundIndexCircles];
     
     // This is the order of appearance
     [self insertChild:self.hourIndex atIndex:0];
     [self insertChild:self.minuteIndex atIndex:1];
     [self insertChild:self.secoundIndex atIndex:2];
+}
+
+- (void)setupSecoundIndexCircles {
+    NSUInteger secoundTopCircleRadius = 15;
+    SKTexture *topCircle = [SKTexture textureWithImage:[self circleImageWithRadius:secoundTopCircleRadius inColor:SECOUND_INDEX_COLOR]];
+    SKSpriteNode *node = [[SKSpriteNode alloc] initWithTexture:topCircle];
+    CGFloat tipOfSecoundIndex = heightSecoundIndex * ( 1 - anchorPointY);
+    
+    node.position = CGPointMake(0, tipOfSecoundIndex);
+    [self.secoundIndex addChild:node];
 }
 
 - (void)setupIndexActionsThatWillRunForever {
@@ -76,7 +96,7 @@ CGFloat const heightOfMinuteAndSecoundIndex = 160;
     CGFloat midY = CGRectGetMidY(self.frame);
     
     // Setup the background
-    SKTexture *backgroundTexture = [SKTexture textureWithImage:[self clockFaceBackground:radius + 5]];
+    SKTexture *backgroundTexture = [SKTexture textureWithImage:[self circleImageWithRadius:radius + 5 inColor:[UIColor whiteColor]]];
     SKSpriteNode *background = [[SKSpriteNode alloc] initWithTexture:backgroundTexture];
     background.position = CGPointMake(midX, midY);
     [self addChild:background];
@@ -100,11 +120,11 @@ CGFloat const heightOfMinuteAndSecoundIndex = 160;
     }
 }
 
-- (UIImage*)clockFaceBackground:(NSUInteger)radius {
+- (UIImage*)circleImageWithRadius:(NSUInteger)radius inColor:(UIColor*)color {
     CGFloat diameter = radius * 2;
     UIGraphicsBeginImageContext(CGSizeMake(diameter, diameter));
     CGContextRef context = UIGraphicsGetCurrentContext();
-    [[UIColor whiteColor] setFill];
+    [color setFill];
     CGRect circleFrame = CGRectMake(0, 0, diameter, diameter);
     CGContextFillEllipseInRect(context, circleFrame);
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
@@ -114,7 +134,7 @@ CGFloat const heightOfMinuteAndSecoundIndex = 160;
 
 - (SKSpriteNode*)rectOfSize:(CGSize)size withBackgroundColor:(SKColor*)color {
     SKSpriteNode *node = [[SKSpriteNode alloc] initWithColor:color size:size];
-    node.anchorPoint = CGPointMake( 0.5, 0.15);
+    node.anchorPoint = CGPointMake(anchorPointX, anchorPointY);
     node.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame));
     return node;
 }
